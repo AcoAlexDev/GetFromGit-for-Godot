@@ -51,8 +51,8 @@ Enable or disable debug_printing in the Inspector or with
 GetFromGitNode.toggle_debug_printing(false)
 ```
 
-License
-This project is licensed under the MIT License (2025). See the https://choosealicense.com/licenses/mit/ for details.
+### License
+This project is licensed under the MIT License. See the LICENSE.md for details.
 
-Contributing
+### Contributing
 Contributions, issues, and feature requests are welcome. Feel free to open an issue or submit a pull request.
