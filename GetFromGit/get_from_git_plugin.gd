@@ -48,8 +48,7 @@ func download_file_from_website(url:String, download_path:String = "res://") -> 
 		push_error("GetFromGit Error: " + download_path + " is not an absolute file path")
 		return
 	if download_path.get_extension().is_empty():
-		if not url.get_extension().is_empty():
-			download_path += url.get_file()
+		download_path += url.get_file()
 		if download_path.get_extension().is_empty():
 			push_error("GetFromGit Error: " + download_path + " is a folder path and not a file path to store data")
 			return
