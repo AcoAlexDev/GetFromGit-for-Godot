@@ -1,5 +1,5 @@
-extends Node
 class_name GetFromGit
+extends Node
 ## AUTHOR: Github @AcoAlexDev
 
 ## A utility class for downloading files and fetching content from public GitHub repositories and websites.
@@ -21,16 +21,22 @@ class_name GetFromGit
 ##func _ready() -> void:
 ##	GetFromGitNode.download_file_from_website("https://dummyimage.com/300/09f/fff.png", "res://downloaded_image.png")
 
+enum Operations {
+	DOWNLOAD=0,
+	GET_STRING=1,
+	GET_IMAGE=2
+}
+
+const temp_path:String = "user://GetFromGit/temp/"
+const request_timeout:float = 30
+
 @export var debug_printing:bool = true
 
-@onready var http_request: HTTPRequest = HTTPRequest.new()
-
-enum OPERATIONS {DOWNLOAD=0, GET_STRING=1, GET_IMAGE=2}
 var request_queue:Array[GetFromGitData] = []
 var returned:String = "ACO:NULL"
 var returned_image:Image = null
-const temp_path:String = "user://GetFromGit/temp/"
-const request_timeout:float = 30
+
+@onready var http_request: HTTPRequest = HTTPRequest.new()
 
 func _ready() -> void:
 	DirAccess.make_dir_absolute("user://GetFromGit/")
@@ -52,7 +58,7 @@ func download_file_from_website(url:String, download_path:String = "res://") -> 
 		if download_path.get_extension().is_empty():
 			push_error("GetFromGit Error: " + download_path + " is a folder path and not a file path to store data")
 			return
-	_git_add_to_queue(url, OPERATIONS.DOWNLOAD, download_path)
+	_git_add_to_queue(url, Operations.DOWNLOAD, download_path)
 
 ## This function downloads a file from git to your computer.
 ## download_path can either be a folder  and the filename and extension will be the same as on git
@@ -67,7 +73,7 @@ func get_string_content_from_website(url:String) -> String:
 	if url.get_extension().is_empty():
 		push_error("GetFromGit Error: url: '" + url + "' is not a link to a file")
 		return "ACO:ERROR"
-	_git_add_to_queue(url, OPERATIONS.GET_STRING)
+	_git_add_to_queue(url, Operations.GET_STRING)
 	while returned == "ACO:NULL":
 		await get_tree().process_frame
 	var sb:String = returned
@@ -88,7 +94,7 @@ func load_image_from_website(url:String) -> Image:
 	if not url.get_extension() in supported_image_extensions:
 		if debug_printing:
 			push_warning("GetFromGit Warning: url '" + url + "' is not in supported image formates: ", supported_image_extensions, "\n It will still try to load the file but it is temporarily stored in ", temp_path)
-	_git_add_to_queue(url, OPERATIONS.GET_IMAGE)
+	_git_add_to_queue(url, Operations.GET_IMAGE)
 	while returned_image == null:
 		await get_tree().process_frame
 	var sb = returned_image
@@ -112,7 +118,7 @@ func cancel_all_requests() -> void:
 #region Internal Functions: Don't use directly
 
 ## Adds data to the request-queue.
-func _git_add_to_queue(git_url:String, op:OPERATIONS=OPERATIONS.DOWNLOAD, os_path:String = "res://") -> void:
+func _git_add_to_queue(git_url:String, op:Operations=Operations.DOWNLOAD, os_path:String = "res://") -> void:
 	var data:GetFromGitData = GetFromGitData.new()
 	data.operation = op
 	data.git_url = git_url
@@ -143,17 +149,17 @@ func _git_request_completed(result:int, response_code:int, _headers:PackedString
 		push_warning("GetFromGit Error: Queue cleared before git_request could be completed")
 		return
 	var request_data:GetFromGitData = request_queue[0]
-	if request_data.operation == OPERATIONS.DOWNLOAD:
+	if request_data.operation == Operations.DOWNLOAD:
 		var file = FileAccess.open(request_data.os_path, FileAccess.WRITE)
 		file.store_buffer(body)
 		file.close()
 		if debug_printing:
 			print("GetFromGit: Saved file to: ", request_data.os_path)
-	elif request_data.operation == OPERATIONS.GET_STRING:
+	elif request_data.operation == Operations.GET_STRING:
 		returned = body.get_string_from_utf8()
 		if debug_printing:
 			print("GetFromGit: Returned string '" + returned + "'")
-	elif request_data.operation == OPERATIONS.GET_IMAGE:
+	elif request_data.operation == Operations.GET_IMAGE:
 		var i = Image.new()
 		if request_data.git_url.get_extension() == "png":
 			i.load_png_from_buffer(body)

@@ -14,9 +14,9 @@ func _ready() -> void:
 	
 	## Load image
 	var image = await gfg.load_image_from_github("https://github.com/AcoAlexDev/GetFromGit-for-Godot/blob/main/icon.png")
-	var tr = TextureRect.new()
-	tr.texture = ImageTexture.create_from_image(image)
-	add_child(tr)
+	var texture_rect = TextureRect.new()
+	texture_rect.texture = ImageTexture.create_from_image(image)
+	add_child(texture_rect)
 	
 	## All functions are also available as website-form e.g. gfg.download_file_from_website("YOUR_WEBSITE.com/file.txt")
 	
