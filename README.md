@@ -3,6 +3,10 @@
 GetFromGit is a Godot utility node for downloading and fetching content from public GitHub repositories and websites at runtime.
 GitHub URLs are automatically converted to raw form, supports async text retrieval, file downloads, and image loading.
 
+## Note
+This asset is available in the official Godot Asset Libary!
+Download is suggested by using the [godot website](https://godotengine.org/asset-library/asset/4314) or the Godot editor itself in the AssetLib Tab.
+
 ## Usage
 
 1. Download this repo
